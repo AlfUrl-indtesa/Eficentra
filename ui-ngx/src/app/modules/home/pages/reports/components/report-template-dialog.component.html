@@ -1,0 +1,1112 @@
+<!--
+
+    Copyright © 2016-2026 The Thingsboard Authors
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<h2 mat-dialog-title>
+  {{
+  data?.template
+  ? ('reports.edit_report' | translate)
+  : ('reports.new_report' | translate)
+  }}
+</h2>
+
+<div mat-dialog-content [formGroup]="form" class="dialog-content">
+
+  <!-- Información básica -->
+  <div class="dialog-section">
+    <h3>{{ 'reports.basic_info' | translate }}</h3>
+
+    <mat-form-field appearance="outline">
+      <mat-label>
+        {{ 'reports.name' | translate }}
+      </mat-label>
+
+      <input matInput formControlName="name">
+
+      <mat-error *ngIf="form.get('name')?.hasError('required')">
+        {{ 'reports.name_required' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>
+        {{ 'reports.description' | translate }}
+      </mat-label>
+
+      <textarea matInput rows="3" formControlName="description">
+      </textarea>
+    </mat-form-field>
+
+    <div class="two-columns">
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{ 'reports.type' | translate }}
+        </mat-label>
+
+        <mat-select formControlName="type">
+          <mat-option value="EXECUTIVE">
+            {{ 'reports.type_executive' | translate }}
+          </mat-option>
+
+          <mat-option value="OPERATIONAL">
+            {{ 'reports.type_operational' | translate }}
+          </mat-option>
+
+          <mat-option value="COMPRESSED_AIR">
+            {{ 'reports.type_compressed_air' | translate }}
+          </mat-option>
+
+          <mat-option value="CUSTOM">
+            {{ 'reports.type_custom' | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{ 'reports.status' | translate }}
+        </mat-label>
+
+        <mat-select formControlName="status">
+          <mat-option value="DRAFT">
+            {{ 'reports.status_draft' | translate }}
+          </mat-option>
+
+          <mat-option value="ACTIVE">
+            {{ 'reports.status_active' | translate }}
+          </mat-option>
+
+          <mat-option value="DISABLED">
+            {{ 'reports.status_disabled' | translate }}
+          </mat-option>
+
+          <mat-option value="ARCHIVED">
+            {{ 'reports.status_archived' | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Alcance de datos -->
+  <div class="dialog-section">
+    <h3>{{ 'reports.data_scope' | translate }}</h3>
+
+    <mat-form-field appearance="outline">
+      <mat-label>
+        {{ 'reports.entity_type' | translate }}
+      </mat-label>
+
+      <mat-select formControlName="entityType">
+        <mat-option value="DEVICE">
+          {{ 'entity.type-device' | translate }}
+        </mat-option>
+
+        <mat-option value="ASSET">
+          {{ 'entity.type-asset' | translate }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>
+        {{ 'reports.entities' | translate }}
+      </mat-label>
+
+      <mat-select formControlName="selectedEntityIds" multiple>
+
+        <mat-option *ngIf="loadingEntities" disabled>
+          {{ 'reports.loading_entities' | translate }}
+        </mat-option>
+
+        <mat-option *ngFor="let entity of entities" [value]="entity.id">
+
+          {{ entity.label || entity.name }}
+
+          <span *ngIf="entity.type">
+            — {{ entity.type }}
+          </span>
+        </mat-option>
+      </mat-select>
+
+      <mat-hint>
+        {{ 'reports.entities_hint' | translate }}
+      </mat-hint>
+    </mat-form-field>
+
+    <!-- Configuración de variables -->
+    <div class="variable-config-wrapper">
+      <h3>
+        {{ 'reports.variable_configuration' | translate }}
+      </h3>
+
+      <div class="variable-config-subtitle">
+        {{ 'reports.variable_configuration_hint' | translate }}
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+
+        <mat-label>
+          {{ 'reports.chart_layout' | translate }}
+        </mat-label>
+
+        <mat-select formControlName="chartLayout">
+          <mat-option value="SEPARATE">
+            {{ 'reports.chart_layout_separate' | translate }}
+          </mat-option>
+
+          <mat-option value="COMBINED">
+            {{ 'reports.chart_layout_combined' | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="combined-chart-config" *ngIf="form.getRawValue().chartLayout === 'COMBINED'">
+
+        <h4>
+          Configuración de gráfica combinada
+        </h4>
+
+        <div class="combined-chart-grid">
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Agrupar gráficas por</mat-label>
+
+            <mat-select formControlName="combinedGroupMode">
+              <mat-option value="BY_ENTITY">
+                Dispositivo
+              </mat-option>
+
+              <mat-option value="BY_VARIABLE">
+                Variable
+              </mat-option>
+
+              <mat-option value="ALL_SERIES">
+                Todas las series
+              </mat-option>
+            </mat-select>
+
+            <mat-hint>
+              Permite generar una gráfica para cada equipo o comparar equipos por variable.
+            </mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Título de la gráfica</mat-label>
+
+            <mat-select formControlName="combinedTitleMode">
+              <mat-option value="AUTO">
+                Automático
+              </mat-option>
+
+              <mat-option value="ENTITY_NAME">
+                Nombre del dispositivo
+              </mat-option>
+
+              <mat-option value="VARIABLE_NAME">
+                Nombre de la variable
+              </mat-option>
+
+              <mat-option value="CUSTOM">
+                Título personalizado
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" *ngIf="form.getRawValue().combinedTitleMode === 'CUSTOM'" subscriptSizing="dynamic">
+
+            <mat-label>Título personalizado</mat-label>
+
+            <input matInput formControlName="combinedCustomTitle" maxlength="120">
+
+            <mat-hint>
+              Ejemplo: Sistema principal de aire comprimido
+            </mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Dividir el periodo por</mat-label>
+
+            <mat-select formControlName="combinedGranularity">
+              <mat-option value="FULL">
+                Periodo completo
+              </mat-option>
+
+              <mat-option value="DAY">
+                Día
+              </mat-option>
+
+              <mat-option value="WEEK">
+                Semana
+              </mat-option>
+
+              <mat-option value="MONTH">
+                Mes
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Orden de las gráficas</mat-label>
+
+            <mat-select formControlName="combinedSortMode">
+              <mat-option value="ENTITY_THEN_PERIOD">
+                Dispositivo y después periodo
+              </mat-option>
+
+              <mat-option value="PERIOD_THEN_ENTITY">
+                Periodo y después dispositivo
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Resolución para dibujo</mat-label>
+
+            <mat-select formControlName="combinedDataInterval">
+              <mat-option value="AUTO">
+                Automática
+              </mat-option>
+
+              <mat-option value="RAW">
+                Todos los puntos
+              </mat-option>
+
+              <mat-option value="FIFTEEN_MINUTES">
+                Cada 15 minutos
+              </mat-option>
+
+              <mat-option value="THIRTY_MINUTES">
+                Cada 30 minutos
+              </mat-option>
+
+              <mat-option value="HOUR">
+                Cada hora
+              </mat-option>
+
+              <mat-option value="CUSTOM">
+                Intervalo personalizado
+              </mat-option>
+            </mat-select>
+
+            <mat-hint>
+              Sólo reduce los puntos dibujados; las estadísticas usan todos los datos.
+            </mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" *ngIf="form.getRawValue().combinedDataInterval === 'CUSTOM'" subscriptSizing="dynamic">
+
+            <mat-label>Intervalo personalizado</mat-label>
+
+            <input matInput type="number" min="1" max="10080" formControlName="combinedCustomIntervalMinutes">
+
+            <span matSuffix>min</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline"subscriptSizing="dynamic">
+            <mat-label>Agregación del intervalo</mat-label>
+
+            <mat-select formControlName="combinedBucketAggregation">
+              <mat-option value="AVG">
+                Promedio
+              </mat-option>
+
+              <mat-option value="MIN">
+                Mínimo
+              </mat-option>
+
+              <mat-option value="MAX">
+                Máximo
+              </mat-option>
+
+              <mat-option value="SUM">
+                Suma
+              </mat-option>
+
+              <mat-option value="FIRST">
+                Primer valor
+              </mat-option>
+
+              <mat-option value="LAST">
+                Último valor
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Densidad por página</mat-label>
+
+            <mat-select formControlName="combinedPageDensity">
+              <mat-option value="AUTO">
+                Automática
+              </mat-option>
+
+              <mat-option value="DETAILED">
+                Detallada — 1 gráfica
+              </mat-option>
+
+              <mat-option value="COMPACT">
+                Compacta — 2 gráficas
+              </mat-option>
+
+              <mat-option value="DENSE">
+                Densa — 4 gráficas
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Tabla debajo de la gráfica</mat-label>
+
+            <mat-select formControlName="combinedTableMode">
+              <mat-option value="FULL">
+                Completa
+              </mat-option>
+
+              <mat-option value="COMPACT">
+                Compacta
+              </mat-option>
+
+              <mat-option value="NONE">
+                Sin tabla
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Leyenda</mat-label>
+
+            <mat-select formControlName="combinedLegendMode">
+              <mat-option value="AUTO">
+                Automática
+              </mat-option>
+
+              <mat-option value="PER_CHART">
+                En cada gráfica
+              </mat-option>
+
+              <mat-option value="SHARED">
+                Compartida por página
+              </mat-option>
+
+              <mat-option value="NONE">
+                Sin leyenda
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Nombre de las series</mat-label>
+
+            <mat-select formControlName="combinedSeriesNameMode">
+              <mat-option value="AUTO">
+                Automático
+              </mat-option>
+
+              <mat-option value="LABEL_ONLY">
+                Sólo variable
+              </mat-option>
+
+              <mat-option value="LABEL_AND_ENTITY">
+                Variable y dispositivo
+              </mat-option>
+
+              <mat-option value="NUMBERED">
+                Identificador corto
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </div>
+
+        <div class="combined-chart-options" subscriptSizing="dynamic" *ngIf="form.getRawValue().combinedTableMode !== 'NONE'">
+
+          <div class="combined-options-title">
+            Estadísticas incluidas en la tabla
+          </div>
+
+          <label>
+            <input type="checkbox" formControlName="combinedStatCount">
+            Muestras
+          </label>
+
+          <label>
+            <input type="checkbox" formControlName="combinedStatMin">
+            Mínimo
+          </label>
+
+          <label>
+            <input type="checkbox" formControlName="combinedStatMax">
+            Máximo
+          </label>
+
+          <label>
+            <input type="checkbox" formControlName="combinedStatAvg">
+            Promedio
+          </label>
+
+          <label>
+            <input type="checkbox" formControlName="combinedStatSum">
+            Suma
+          </label>
+
+          <label>
+            <input type="checkbox" formControlName="combinedStatFirst">
+            Primero
+          </label>
+
+          <label>
+            <input type="checkbox" formControlName="combinedStatLast">
+            Último
+          </label>
+
+          <label>
+            <input type="checkbox" formControlName="combinedStatDelta">
+            Diferencia
+          </label>
+
+        </div>
+      </div>
+
+      <div *ngIf="!form.getRawValue().selectedEntityIds?.length" class="empty-state">
+
+        {{ 'reports.select_entities_first' | translate }}
+      </div>
+
+      <!-- Dispositivo / entidad -->
+      <div class="entity-variable-card" *ngFor="
+          let entityId of form.getRawValue().selectedEntityIds
+        ">
+
+        <div class="entity-variable-header">
+          <strong>
+            {{ displayEntity(entityId) }}
+          </strong>
+
+          <span *ngIf="
+              loadingKeysByEntityId[
+                entityId.entityType + ':' + entityId.id
+              ]
+            ">
+            {{ 'reports.loading_keys' | translate }}
+          </span>
+        </div>
+
+        <!-- Variable -->
+        <div class="variable-row" *ngFor="
+            let variable of variablesForEntity(entityId)
+          ">
+
+          <div class="variable-row-main">
+            <label class="native-checkbox">
+              <input type="checkbox" [checked]="variable.enabled" (change)="
+                  onVariableEnabledChanged(
+                    variable,
+                    $event
+                  )
+                ">
+
+              {{ variable.key }}
+            </label>
+          </div>
+
+          <!-- Configuración general de variable -->
+          <div class="variable-grid" *ngIf="variable.enabled">
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                {{ 'reports.print_label' | translate }}
+              </mat-label>
+
+              <input matInput [(ngModel)]="variable.label" [ngModelOptions]="{
+                  standalone: true
+                }">
+            </mat-form-field>
+
+            <div class="unit-input-wrapper">
+              <label class="unit-input-label">
+                {{ 'reports.unit' | translate }}
+              </label>
+
+              <tb-unit-input class="report-unit-input" [(ngModel)]="variable.unit" [ngModelOptions]="{
+                  standalone: true
+                }" [required]="false" [supportsUnitConversion]="true" [onlySystemUnits]="false">
+              </tb-unit-input>
+            </div>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                {{ 'reports.scale' | translate }}
+              </mat-label>
+
+              <input matInput type="number" step="any" [(ngModel)]="variable.scale" [ngModelOptions]="{
+                  standalone: true
+                }">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                {{ 'reports.offset' | translate }}
+              </mat-label>
+
+              <input matInput type="number" step="any" [(ngModel)]="variable.offset" [ngModelOptions]="{
+                  standalone: true
+                }">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" *ngIf="form.getRawValue().chartLayout !== 'COMBINED'">
+              <mat-label>
+                {{ 'reports.chart_granularity' | translate }}
+              </mat-label>
+
+              <mat-select [(ngModel)]="variable.granularity" [ngModelOptions]="{
+                  standalone: true
+                }">
+
+                <mat-option value="FULL">
+                  {{ 'reports.granularity_full' | translate }}
+                </mat-option>
+
+                <mat-option value="DAY">
+                  {{ 'reports.granularity_day' | translate }}
+                </mat-option>
+
+                <mat-option value="WEEK">
+                  {{ 'reports.granularity_week' | translate }}
+                </mat-option>
+
+                <mat-option value="MONTH">
+                  {{ 'reports.granularity_month' | translate }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Salidas y estadísticas -->
+          <div class="variable-options" *ngIf="variable.enabled && form.getRawValue().chartLayout !== 'COMBINED'">
+
+            <label>
+              <input type="checkbox" [checked]="variable.chartEnabled" (change)="
+                  onVariableBooleanChanged(
+                    variable,
+                    'chartEnabled',
+                    $event
+                  )
+                ">
+
+              {{ 'reports.include_chart' | translate }}
+            </label>
+
+            <label>
+              <input type="checkbox" [checked]="variable.tableEnabled" (change)="
+                  onVariableBooleanChanged(
+                    variable,
+                    'tableEnabled',
+                    $event
+                  )
+                ">
+
+              {{ 'reports.include_table' | translate }}
+            </label>
+
+            <label>
+              <input type="checkbox" [checked]="variable.stats.min" (change)="
+                  onVariableStatChanged(
+                    variable,
+                    'min',
+                    $event
+                  )
+                ">
+
+              {{ 'reports.stat_min' | translate }}
+            </label>
+
+            <label>
+              <input type="checkbox" [checked]="variable.stats.max" (change)="
+                  onVariableStatChanged(
+                    variable,
+                    'max',
+                    $event
+                  )
+                ">
+
+              {{ 'reports.stat_max' | translate }}
+            </label>
+
+            <label>
+              <input type="checkbox" [checked]="variable.stats.avg" (change)="
+                  onVariableStatChanged(
+                    variable,
+                    'avg',
+                    $event
+                  )
+                ">
+
+              {{ 'reports.stat_avg' | translate }}
+            </label>
+
+            <label>
+              <input type="checkbox" [checked]="variable.stats.count" (change)="
+                  onVariableStatChanged(
+                    variable,
+                    'count',
+                    $event
+                  )
+                ">
+
+              {{ 'reports.stat_count' | translate }}
+            </label>
+
+            <label>
+              <input type="checkbox" [checked]="variable.stats.sum" (change)="
+                  onVariableStatChanged(
+                    variable,
+                    'sum',
+                    $event
+                  )
+                ">
+
+              {{ 'reports.stat_sum' | translate }}
+            </label>
+
+            <label>
+              <input type="checkbox" [checked]="variable.stats.first" (change)="
+                  onVariableStatChanged(
+                    variable,
+                    'first',
+                    $event
+                  )
+                ">
+
+              {{ 'reports.stat_first' | translate }}
+            </label>
+
+            <label>
+              <input type="checkbox" [checked]="variable.stats.last" (change)="
+                  onVariableStatChanged(
+                    variable,
+                    'last',
+                    $event
+                  )
+                ">
+
+              {{ 'reports.stat_last' | translate }}
+            </label>
+
+            <label>
+              <input type="checkbox" [checked]="variable.stats.delta" (change)="
+                  onVariableStatChanged(
+                    variable,
+                    'delta',
+                    $event
+                  )
+                ">
+
+              {{ 'reports.stat_delta' | translate }}
+            </label>
+          </div>
+
+          <!-- Análisis avanzado -->
+          <div class="variable-analysis" *ngIf="variable.enabled">
+
+            <div class="variable-analysis-header">
+              <label class="native-checkbox">
+                <input type="checkbox" [(ngModel)]="variable.analysis.enabled" [ngModelOptions]="{
+                    standalone: true
+                  }">
+
+                {{
+                'reports.enable_variable_analysis'
+                | translate
+                }}
+              </label>
+            </div>
+
+            <div *ngIf="variable.analysis.enabled">
+              <div class="analysis-grid">
+
+                <mat-form-field appearance="outline">
+                  <mat-label>
+                    {{
+                    'reports.performance_direction'
+                    | translate
+                    }}
+                  </mat-label>
+
+                  <mat-select [(ngModel)]="
+                      variable.analysis.performanceDirection
+                    " [ngModelOptions]="{
+                      standalone: true
+                    }">
+
+                    <mat-option value="TARGET_RANGE">
+                      {{
+                      'reports.direction_target_range'
+                      | translate
+                      }}
+                    </mat-option>
+
+                    <mat-option value="HIGHER_IS_BETTER">
+                      {{
+                      'reports.direction_higher_better'
+                      | translate
+                      }}
+                    </mat-option>
+
+                    <mat-option value="LOWER_IS_BETTER">
+                      {{
+                      'reports.direction_lower_better'
+                      | translate
+                      }}
+                    </mat-option>
+
+                    <mat-option value="NEUTRAL">
+                      {{
+                      'reports.direction_neutral'
+                      | translate
+                      }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>
+                    {{
+                    'reports.minimum_coverage'
+                    | translate
+                    }}
+                  </mat-label>
+
+                  <input matInput type="number" min="0" max="100" [(ngModel)]="
+                      variable.analysis.minimumCoveragePct
+                    " [ngModelOptions]="{
+                      standalone: true
+                    }">
+
+                  <span matSuffix>%</span>
+                </mat-form-field>
+              </div>
+
+              <!-- Rango esperado -->
+              <div class="range-config">
+                <label class="native-checkbox">
+                  <input type="checkbox" [(ngModel)]="
+                      variable.analysis.expectedRange.enabled
+                    " [ngModelOptions]="{
+                      standalone: true
+                    }">
+
+                  {{ 'reports.expected_range' | translate }}
+                </label>
+
+                <div class="range-fields" *ngIf="
+                    variable.analysis.expectedRange.enabled
+                  ">
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>
+                      {{ 'reports.minimum' | translate }}
+                    </mat-label>
+
+                    <input matInput type="number" step="any" [(ngModel)]="
+                        variable.analysis.expectedRange.min
+                      " [ngModelOptions]="{
+                        standalone: true
+                      }">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>
+                      {{ 'reports.maximum' | translate }}
+                    </mat-label>
+
+                    <input matInput type="number" step="any" [(ngModel)]="
+                        variable.analysis.expectedRange.max
+                      " [ngModelOptions]="{
+                        standalone: true
+                      }">
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Rango de advertencia -->
+              <div class="range-config">
+                <label class="native-checkbox">
+                  <input type="checkbox" [(ngModel)]="
+                      variable.analysis.warningRange.enabled
+                    " [ngModelOptions]="{
+                      standalone: true
+                    }">
+
+                  {{ 'reports.warning_range' | translate }}
+                </label>
+
+                <div class="range-fields" *ngIf="
+                    variable.analysis.warningRange.enabled
+                  ">
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>
+                      {{ 'reports.minimum' | translate }}
+                    </mat-label>
+
+                    <input matInput type="number" step="any" [(ngModel)]="
+                        variable.analysis.warningRange.min
+                      " [ngModelOptions]="{
+                        standalone: true
+                      }">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>
+                      {{ 'reports.maximum' | translate }}
+                    </mat-label>
+
+                    <input matInput type="number" step="any" [(ngModel)]="
+                        variable.analysis.warningRange.max
+                      " [ngModelOptions]="{
+                        standalone: true
+                      }">
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="variable-options analysis-options">
+                <label>
+                  <input type="checkbox" [(ngModel)]="
+                      variable.analysis.comparePreviousPeriod
+                    " [ngModelOptions]="{
+                      standalone: true
+                    }">
+
+                  {{
+                  'reports.compare_previous_period'
+                  | translate
+                  }}
+                </label>
+
+                <label>
+                  <input type="checkbox" [(ngModel)]="
+                      variable.analysis.detectTrend
+                    " [ngModelOptions]="{
+                      standalone: true
+                    }">
+
+                  {{ 'reports.detect_trend' | translate }}
+                </label>
+
+                <label>
+                  <input type="checkbox" [(ngModel)]="
+                      variable.analysis.detectOutliers
+                    " [ngModelOptions]="{
+                      standalone: true
+                    }">
+
+                  {{ 'reports.detect_outliers' | translate }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <mat-error *ngIf="
+          form.get('selectedKeys')?.hasError('required')
+        ">
+        {{
+        'reports.telemetry_keys_required'
+        | translate
+        }}
+      </mat-error>
+    </div>
+  </div>
+
+  <!-- Personalización -->
+  <div class="dialog-section">
+    <h3>{{ 'reports.branding' | translate }}</h3>
+
+    <div class="two-columns">
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{ 'reports.company_name' | translate }}
+        </mat-label>
+
+        <input matInput formControlName="companyName">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{ 'reports.customer_name' | translate }}
+        </mat-label>
+
+        <input matInput formControlName="customerName">
+      </mat-form-field>
+    </div>
+
+    <div class="two-columns">
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{ 'reports.site_name' | translate }}
+        </mat-label>
+
+        <input matInput formControlName="siteName">
+      </mat-form-field>
+
+      <div class="logo-configuration">
+
+        <mat-form-field appearance="outline">
+          <mat-label>
+            {{ 'reports.logo_url' | translate }}
+          </mat-label>
+
+          <input matInput formControlName="logoUrl" (input)="onLogoUrlChanged()">
+
+          <mat-hint>
+            {{ 'reports.logo_url_hint' | translate }}
+          </mat-hint>
+        </mat-form-field>
+
+        <div class="logo-actions">
+
+          <label class="logo-upload-button">
+            <input type="file" hidden accept="image/png,image/jpeg" (change)="onLogoFileSelected($event)">
+
+            {{ 'reports.upload_logo' | translate }}
+          </label>
+
+          <button type="button" mat-stroked-button (click)="onLogoUrlChanged()">
+
+            {{ 'reports.test_logo' | translate }}
+          </button>
+
+        </div>
+
+        <div class="logo-preview-card" [class.logo-preview-valid]="
+      logoPreviewStatus === 'VALID'
+    " [class.logo-preview-invalid]="
+      logoPreviewStatus === 'INVALID'
+    ">
+
+          <img *ngIf="logoPreviewUrl" [src]="logoPreviewUrl" alt="Logo preview" (load)="onLogoPreviewLoaded()"
+            (error)="onLogoPreviewError()">
+
+          <span *ngIf="logoPreviewStatus === 'EMPTY'">
+            {{ 'reports.logo_not_selected' | translate }}
+          </span>
+
+          <span *ngIf="logoPreviewStatus === 'LOADING'">
+            {{ 'reports.logo_loading' | translate }}
+          </span>
+
+          <span *ngIf="logoPreviewStatus === 'VALID'">
+            {{ 'reports.logo_valid' | translate }}
+          </span>
+
+          <span *ngIf="logoPreviewStatus === 'INVALID'">
+            {{ 'reports.logo_invalid' | translate }}
+          </span>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="two-columns">
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{ 'reports.cover_title' | translate }}
+        </mat-label>
+
+        <input matInput formControlName="coverTitle">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{ 'reports.cover_subtitle' | translate }}
+        </mat-label>
+
+        <input matInput formControlName="coverSubtitle">
+      </mat-form-field>
+    </div>
+
+    <div class="two-columns">
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{ 'reports.primary_color' | translate }}
+        </mat-label>
+
+        <input matInput type="color" formControlName="primaryColor">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{ 'reports.secondary_color' | translate }}
+        </mat-label>
+
+        <input matInput type="color" formControlName="secondaryColor">
+      </mat-form-field>
+    </div>
+
+    <div class="two-columns">
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{ 'reports.footer' | translate }}
+        </mat-label>
+
+        <input matInput formControlName="footerText">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>
+          {{
+          'reports.confidentiality_text'
+          | translate
+          }}
+        </mat-label>
+
+        <input matInput formControlName="confidentialityText">
+      </mat-form-field>
+    </div>
+
+    <div class="branding-options">
+      <label>
+        <input type="checkbox" formControlName="showPageNumbers">
+
+        {{ 'reports.show_page_numbers' | translate }}
+      </label>
+
+      <label>
+        <input type="checkbox" formControlName="showGeneratedDate">
+
+        {{ 'reports.show_generated_date' | translate }}
+      </label>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-actions align="end">
+
+  <button type="button" mat-button (click)="close()">
+
+    {{ 'action.cancel' | translate }}
+  </button>
+
+  <button type="button" mat-raised-button color="primary" (click)="save()">
+
+    {{ 'action.save' | translate }}
+  </button>
+</div>

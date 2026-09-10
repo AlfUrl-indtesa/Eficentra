@@ -1,0 +1,399 @@
+/**
+ * Copyright © 2016-2026 The Thingsboard Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 720px;
+  max-height: 72vh;
+  padding-top: 4px;
+}
+
+.dialog-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.025);
+}
+
+.dialog-section h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0.82;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 860px) {
+  .dialog-content {
+    min-width: 0;
+  }
+
+  .two-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.variable-config-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.entity-variable-card {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 12px;
+  background: #ffffff;
+}
+
+.entity-variable-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.variable-row {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 12px 0;
+}
+
+.variable-row:first-of-type {
+  border-top: none;
+}
+
+.variable-row-main {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.native-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.variable-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.variable-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.variable-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.empty-state {
+  padding: 12px;
+  border-radius: 8px;
+  background: #f5f8fb;
+  color: #5b6b7a;
+  font-size: 13px;
+}
+
+@media (max-width: 1100px) {
+  .variable-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .variable-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.unit-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.unit-input-label {
+  font-size: 12px;
+  font-weight: 400;
+  margin-bottom: 4px;
+  color: rgba(0, 0, 0, 0.68);
+}
+
+.unit-input-wrapper tb-unit-input {
+  width: 100%;
+}
+
+.variable-config-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.variable-config-header h3 {
+  margin: 0;
+}
+
+.variable-config-subtitle {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.58);
+}
+
+.chart-layout-field {
+  width: 260px;
+  min-width: 220px;
+}
+
+@media (max-width: 860px) {
+  .variable-config-header {
+    flex-direction: column;
+  }
+
+  .chart-layout-field {
+    width: 100%;
+  }
+}
+
+.report-unit-input {
+  width: 100%;
+}
+
+.unit-input-wrapper {
+  min-width: 0;
+}
+
+.variable-analysis {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(27, 141, 208, 0.24);
+  border-radius: 8px;
+  background: rgba(27, 141, 208, 0.035);
+}
+
+.variable-analysis-header {
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(160px, 240px);
+  gap: 12px;
+}
+
+.range-config {
+  margin-top: 10px;
+}
+
+.range-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 220px));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.analysis-options {
+  margin-top: 12px;
+}
+
+.branding-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 4px;
+}
+
+.branding-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 720px) {
+
+  .analysis-grid,
+  .range-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.logo-configuration {
+  display: grid;
+  gap: 12px;
+}
+
+.logo-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.logo-upload-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 0, 0, 0.28);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.logo-preview-card {
+  min-height: 100px;
+  padding: 12px;
+  border: 1px dashed rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-preview-card img {
+  display: block;
+  max-width: 180px;
+  max-height: 80px;
+  object-fit: contain;
+}
+
+.logo-preview-valid {
+  border-color: #2e7d32;
+}
+
+.logo-preview-invalid {
+  border-color: #c63228;
+}
+
+.combined-chart-config {
+  display: grid;
+  gap: 12px;
+  margin: 4px 0 16px;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.combined-chart-config h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.combined-chart-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+}
+
+.combined-chart-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.combined-chart-config {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16px;
+  border: 1px solid rgba(27, 141, 208, 0.24);
+  border-radius: 8px;
+  background: rgba(27, 141, 208, 0.035);
+}
+
+.combined-chart-config h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.combined-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+  row-gap: 22px;
+  align-items: start;
+}
+
+.combined-chart-grid mat-form-field {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.combined-chart-field-wide {
+  grid-column: 1 / -1;
+}
+
+.combined-chart-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 20px;
+  margin-top: 4px;
+  padding: 16px 4px 2px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.combined-chart-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.combined-options-title {
+  flex-basis: 100%;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.72);
+}
+
+@media (max-width: 1050px) {
+  .combined-chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .combined-chart-field-wide {
+    grid-column: auto;
+  }
+}

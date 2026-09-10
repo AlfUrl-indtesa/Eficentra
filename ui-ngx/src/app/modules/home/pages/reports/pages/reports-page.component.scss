@@ -1,0 +1,113 @@
+/**
+ * Copyright © 2016-2026 The Thingsboard Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.reports-page {
+  padding: 16px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.full-width-table {
+  width: 100%;
+}
+
+.reports-page {
+  padding: 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.page-header p {
+  margin: 4px 0 0;
+  opacity: 0.72;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.report-card {
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--tb-primary-card-background-color, #fff);
+}
+
+.section-header {
+  margin-bottom: 12px;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.section-header span {
+  display: block;
+  margin-top: 4px;
+  opacity: 0.72;
+}
+
+.full-width-table {
+  width: 100%;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+@media (max-width: 960px) {
+  .page-header {
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+}
+
+.failed-reports-card,
+.failed-executions {
+  margin-top: 16px;
+  opacity: 0.92;
+}
+
+.failed-executions h4 {
+  margin: 16px 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.75;
+}

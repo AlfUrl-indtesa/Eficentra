@@ -90,6 +90,7 @@ export enum MenuId {
   alarms = 'alarms',
   alarm_rules = 'alarm_rules',
   dashboards = 'dashboards',
+  reports = 'reports',
   entities = 'entities',
   devices = 'devices',
   assets = 'assets',
@@ -120,6 +121,16 @@ export enum MenuId {
 declare type MenuFilter = (authState: AuthState) => boolean;
 
 export const menuSectionMap = new Map<MenuId, MenuSection>([
+  [
+    MenuId.reports,
+    {
+      id: MenuId.reports,
+      name: 'reports.title',
+      type: 'link',
+      path: '/reports',
+      icon: 'description'
+    }
+  ],
   [
     MenuId.home,
     {
@@ -917,6 +928,7 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
     Authority.TENANT_ADMIN,
     [
       {id: MenuId.home},
+      {id: MenuId.reports},
       {id: MenuId.iot_hub},
       {id: MenuId.divider},
       {
@@ -1028,6 +1040,7 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
     Authority.CUSTOMER_USER,
     [
       {id: MenuId.home},
+      {id: MenuId.reports},
       {
         id: MenuId.monitor,
         pages: [
