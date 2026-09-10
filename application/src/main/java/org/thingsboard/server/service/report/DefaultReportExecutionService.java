@@ -125,10 +125,7 @@ public class DefaultReportExecutionService
                                 .findById(
                                                 tenantId,
                                                 executionId)
-                                .orElseThrow(() -> new ReportServiceException(
-                                                ReportErrorCode.UNKNOWN_ERROR,
-                                                "Report execution not found: "
-                                                                + executionId));
+                                .orElseThrow(() -> new ReportExecutionNotFoundException());
         }
 
         @Override
