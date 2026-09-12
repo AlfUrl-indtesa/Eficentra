@@ -33,6 +33,7 @@ import { svgIcons, svgIconsUrl } from '@shared/models/icon.models';
 import { ActionSettingsChangeLanguage } from '@core/settings/settings.actions';
 import { SETTINGS_KEY } from '@core/settings/settings.effects';
 import { initCustomJQueryEvents } from '@shared/models/jquery-event.models';
+import { ThemeService } from '@core/services/theme.service';
 
 @Component({
     selector: 'tb-root',
@@ -47,9 +48,10 @@ export class AppComponent {
               private translate: TranslateService,
               private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private themeService: ThemeService) {
 
-    console.log(`ThingsBoard Version: ${env.tbVersion}`);
+    console.log(`${env.appTitle} Version: ${env.tbVersion}`);
 
     this.matIconRegistry.addSvgIconResolver((name, namespace) => {
       if (namespace === 'mdi') {

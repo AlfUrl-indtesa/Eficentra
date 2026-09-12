@@ -141,3 +141,16 @@
     position: relative;
   }
 }
+
+:host-context(.tb-dark) {
+  .tb-nav-header .tb-logo-title,
+  .tb-nav-header .tb-collapsed-logo {
+    filter: brightness(0) invert(1);
+  }
+  mat-sidenav.tb-site-sidenav .tb-side-menu-toolbar {
+    --mat-toolbar-container-text-color: rgba(255, 255, 255, .87);
+  }
+  ::ng-deep .tb-side-menu-toolbar .tb-user-authority {
+    color: rgba(255, 255, 255, .7);
+  }
+}
