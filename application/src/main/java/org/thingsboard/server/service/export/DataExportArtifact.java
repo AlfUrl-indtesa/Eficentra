@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.thingsboard.rule.engine.api;
+package org.thingsboard.server.service.export;
 
-import lombok.Builder;
-import lombok.Data;
+import org.thingsboard.server.common.data.export.DataExportFormat;
 
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-@Data
-@Builder
-public class TbEmail {
+public record DataExportArtifact(
+        Path path,
+        String fileName,
+        DataExportFormat format,
+        long rowCount,
+        long size) implements AutoCloseable {
 
-    private final String from;
-    private final String to;
-    private final String cc;
-    private final String bcc;
-    private final String subject;
-    private final String body;
-    private final Map<String, String> images;
-    private final Map<String, byte[]> attachments;
-    private final boolean html;
-
+    @Override
+    public void close() {
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException ignored) {
+            // The scheduled janitor will retry removal of an orphaned artifact.
+        }
+    }
 }

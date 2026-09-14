@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.thingsboard.rule.engine.api;
+package org.thingsboard.server.common.data.export;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+@Getter
+@RequiredArgsConstructor
+public enum DataExportFormat {
 
-@Data
-@Builder
-public class TbEmail {
+    CSV("csv", "text/csv"),
+    JSON("json", "application/json"),
+    ZIP("zip", "application/zip");
 
-    private final String from;
-    private final String to;
-    private final String cc;
-    private final String bcc;
-    private final String subject;
-    private final String body;
-    private final Map<String, String> images;
-    private final Map<String, byte[]> attachments;
-    private final boolean html;
-
+    private final String extension;
+    private final String mediaType;
 }

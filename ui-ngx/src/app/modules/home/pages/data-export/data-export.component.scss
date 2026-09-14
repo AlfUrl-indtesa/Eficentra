@@ -1,0 +1,159 @@
+/**
+ * Copyright © 2016-2026 The Thingsboard Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.data-export-page {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 8px 4px;
+
+  h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.62);
+  }
+
+  > mat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 48px;
+    color: var(--tb-primary-500);
+  }
+}
+
+mat-card {
+  border-radius: 14px;
+}
+
+mat-card-content {
+  padding-top: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.span-2 {
+  grid-column: 1 / -1;
+}
+
+.attribute-control {
+  display: grid;
+  gap: 10px;
+}
+
+.manual-action,
+.schedule-action {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+
+  button {
+    min-width: 190px;
+  }
+
+  mat-spinner {
+    display: inline-block;
+    margin-right: 8px;
+  }
+}
+
+.loading-row,
+.notice,
+.schedule-switches,
+.limits,
+.schedule-state {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loading-row {
+  min-height: 120px;
+  justify-content: center;
+}
+
+.notice {
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(245, 124, 0, 0.1);
+  color: #9a4d00;
+}
+
+.limits {
+  flex-wrap: wrap;
+  margin-top: 18px;
+  color: rgba(0, 0, 0, 0.58);
+  font-size: 12px;
+
+  span:not(:last-child)::after {
+    content: '·';
+    margin-left: 12px;
+  }
+}
+
+.schedule-switches {
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.schedule-state {
+  align-items: flex-start;
+  flex-direction: column;
+  margin: 4px 0 18px;
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(25, 118, 210, 0.07);
+}
+
+.schedule-error {
+  color: #b3261e;
+}
+
+@media (max-width: 720px) {
+  .data-export-page {
+    padding: 12px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .span-2 {
+    grid-column: auto;
+  }
+
+  .page-header > mat-icon {
+    display: none;
+  }
+}

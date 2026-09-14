@@ -1,0 +1,219 @@
+<!--
+
+    Copyright © 2016-2026 The Thingsboard Authors
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<div class="data-export-page" [formGroup]="form">
+  <header class="page-header">
+    <div>
+      <h1>{{ 'data_export.title' | translate }}</h1>
+      <p>{{ 'data_export.subtitle' | translate }}</p>
+    </div>
+    <mat-icon>cloud_download</mat-icon>
+  </header>
+
+  <mat-card class="export-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'data_export.manual_title' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'data_export.manual_subtitle' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="loading-row" *ngIf="loading">
+        <mat-spinner diameter="28"></mat-spinner>
+        <span>{{ 'data_export.loading' | translate }}</span>
+      </div>
+
+      <div class="form-grid" *ngIf="!loading">
+        <mat-form-field appearance="outline" class="span-2">
+          <mat-label>{{ 'data_export.devices' | translate }}</mat-label>
+          <mat-select formControlName="deviceIds" multiple (selectionChange)="onDevicesChanged()">
+            <mat-option *ngFor="let device of devices" [value]="device.id">
+              {{ device.name }}<span *ngIf="device.label"> — {{ device.label }}</span>
+            </mat-option>
+          </mat-select>
+          <mat-hint>{{ 'data_export.devices_hint' | translate }}</mat-hint>
+          <mat-error>{{ 'data_export.select_device_required' | translate }}</mat-error>
+        </mat-form-field>
+
+        <div class="notice warning span-2" *ngIf="limits?.devicesTruncated">
+          <mat-icon>info</mat-icon>
+          <span>{{ 'data_export.devices_truncated' | translate:{ max: limits?.maxDevices } }}</span>
+        </div>
+
+        <div class="notice warning span-2" *ngIf="limits?.keysTruncated || limits?.attributeKeysTruncated">
+          <mat-icon>info</mat-icon>
+          <span>{{ 'data_export.keys_truncated' | translate:{ max: limits?.maxKeys } }}</span>
+        </div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'data_export.telemetry_keys' | translate }}</mat-label>
+          <mat-select formControlName="keys" multiple [disabled]="loadingKeys">
+            <mat-option *ngFor="let key of telemetryKeys" [value]="key">{{ key }}</mat-option>
+          </mat-select>
+          <mat-hint>{{ loadingKeys ? ('data_export.loading_keys' | translate) : ('data_export.empty_keys_all' | translate) }}</mat-hint>
+        </mat-form-field>
+
+        <div class="attribute-control">
+          <mat-checkbox formControlName="includeAttributes" (change)="onIncludeAttributesChanged()">
+            {{ 'data_export.include_attributes' | translate }}
+          </mat-checkbox>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'data_export.attribute_keys' | translate }}</mat-label>
+            <mat-select formControlName="attributeKeys" multiple
+                        [disabled]="!form.get('includeAttributes')?.value || loadingKeys">
+              <mat-option *ngFor="let key of attributeKeys" [value]="key">{{ key }}</mat-option>
+            </mat-select>
+            <mat-hint>{{ 'data_export.empty_attributes_all' | translate }}</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'data_export.start' | translate }}</mat-label>
+          <input matInput type="datetime-local" formControlName="startDateTime">
+          <mat-error>{{ 'data_export.start_required' | translate }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'data_export.end' | translate }}</mat-label>
+          <input matInput type="datetime-local" formControlName="endDateTime">
+          <mat-error>{{ 'data_export.end_required' | translate }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'data_export.format' | translate }}</mat-label>
+          <mat-select formControlName="format">
+            <mat-option *ngFor="let format of formats" [value]="format">
+              {{ ('data_export.format_' + format.toLowerCase()) | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="manual-action">
+          <button mat-flat-button color="primary" type="button"
+                  [disabled]="exporting || loadingKeys" (click)="exportData()">
+            <mat-spinner *ngIf="exporting" diameter="18"></mat-spinner>
+            <mat-icon *ngIf="!exporting">download</mat-icon>
+            {{ exporting ? ('data_export.exporting' | translate) : ('data_export.export_button' | translate) }}
+          </button>
+        </div>
+      </div>
+
+      <div class="limits" *ngIf="limits">
+        <span>{{ 'data_export.limit_devices' | translate:{ value: limits.maxDevices } }}</span>
+        <span>{{ 'data_export.limit_keys' | translate:{ value: limits.maxKeys } }}</span>
+        <span>{{ 'data_export.limit_rows' | translate:{ value: (limits.maxRows | number) } }}</span>
+        <span>{{ 'data_export.limit_attachment' | translate:{ value: ((limits.maxScheduleAttachmentBytes / 1048576) | number:'1.0-0') } }}</span>
+        <span>{{ 'data_export.limit_range' | translate:{ value: limits.maxRangeDays } }}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="schedule-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'data_export.schedule_title' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'data_export.schedule_subtitle' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="schedule-switches">
+        <mat-checkbox formControlName="scheduleEnabled">
+          {{ 'data_export.schedule_enabled' | translate }}
+        </mat-checkbox>
+        <mat-checkbox formControlName="allDevices">
+          {{ 'data_export.all_devices' | translate }}
+        </mat-checkbox>
+      </div>
+
+      <div class="form-grid">
+        <mat-form-field appearance="outline" class="span-2">
+          <mat-label>{{ 'data_export.email' | translate }}</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="email">
+          <mat-hint>{{ 'data_export.email_hint' | translate }}</mat-hint>
+          <mat-error>{{ 'data_export.valid_email_required' | translate }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'data_export.period' | translate }}</mat-label>
+          <mat-select formControlName="period">
+            <mat-option *ngFor="let period of periods" [value]="period">
+              {{ ('data_export.period_' + period.toLowerCase()) | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="showWeekday()">
+          <mat-label>{{ 'data_export.weekday' | translate }}</mat-label>
+          <mat-select formControlName="dayOfWeek">
+            <mat-option *ngFor="let day of weekdays" [value]="day">
+              {{ ('data_export.weekday_' + day) | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="showMonthDay()">
+          <mat-label>{{ 'data_export.month_day' | translate }}</mat-label>
+          <input matInput type="number" min="1" max="28" formControlName="dayOfMonth">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'data_export.time' | translate }}</mat-label>
+          <input matInput type="time" formControlName="timeOfDay">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'data_export.timezone' | translate }}</mat-label>
+          <input matInput formControlName="timezone">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'data_export.mode' | translate }}</mat-label>
+          <mat-select formControlName="mode">
+            <mat-option *ngFor="let mode of modes" [value]="mode">
+              {{ ('data_export.mode_' + mode.toLowerCase()) | translate }}
+            </mat-option>
+          </mat-select>
+          <mat-hint>{{ ('data_export.mode_' + form.get('mode')?.value.toLowerCase() + '_hint') | translate }}</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="showFullLookback()">
+          <mat-label>{{ 'data_export.full_lookback_days' | translate }}</mat-label>
+          <input matInput type="number" min="1" [max]="limits?.maxRangeDays || 3650"
+                 formControlName="fullLookbackDays">
+        </mat-form-field>
+      </div>
+
+      <div class="schedule-state" *ngIf="schedule">
+        <div><strong>{{ 'data_export.status' | translate }}:</strong>
+          {{ ('data_export.status_' + schedule.lastStatus.toLowerCase()) | translate }}</div>
+        <div *ngIf="schedule.nextRunTs"><strong>{{ 'data_export.next_run' | translate }}:</strong>
+          {{ schedule.nextRunTs | date:'medium' }}</div>
+        <div *ngIf="schedule.lastSuccessTs"><strong>{{ 'data_export.last_success' | translate }}:</strong>
+          {{ schedule.lastSuccessTs | date:'medium' }}</div>
+        <div class="schedule-error" *ngIf="schedule.lastError">{{ schedule.lastError }}</div>
+      </div>
+
+      <div class="schedule-action">
+        <button mat-flat-button color="accent" type="button"
+                [disabled]="savingSchedule" (click)="saveSchedule()">
+          <mat-spinner *ngIf="savingSchedule" diameter="18"></mat-spinner>
+          <mat-icon *ngIf="!savingSchedule">schedule</mat-icon>
+          {{ savingSchedule ? ('data_export.saving' | translate) : ('data_export.save_schedule' | translate) }}
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

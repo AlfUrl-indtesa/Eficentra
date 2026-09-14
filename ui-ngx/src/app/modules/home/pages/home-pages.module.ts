@@ -51,10 +51,12 @@ import { AiModelModule } from '@home/pages/ai-model/ai-model.module';
 import { IotHubModule } from '@home/pages/iot-hub/iot-hub.module';
 
 import { ReportsModule } from './reports/reports.module';
+import { DataExportModule } from './data-export/data-export.module';
 
 @NgModule({
   exports: [
     ReportsModule,
+    DataExportModule,
     AdminModule,
     HomeLinksModule,
     ProfileModule,

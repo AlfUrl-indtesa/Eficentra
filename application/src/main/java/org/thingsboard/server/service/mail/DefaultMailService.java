@@ -224,7 +224,8 @@ public class DefaultMailService implements MailService {
             }
             try {
                 MimeMessage mailMsg = javaMailSender.createMimeMessage();
-                boolean multipart = (tbEmail.getImages() != null && !tbEmail.getImages().isEmpty());
+                boolean multipart = (tbEmail.getImages() != null && !tbEmail.getImages().isEmpty())
+                        || (tbEmail.getAttachments() != null && !tbEmail.getAttachments().isEmpty());
                 MimeMessageHelper helper = new MimeMessageHelper(mailMsg, multipart, "UTF-8");
                 helper.setFrom(StringUtils.isBlank(tbEmail.getFrom()) ? mailFrom : tbEmail.getFrom());
                 helper.setTo(tbEmail.getTo().split("\\s*,\\s*"));
@@ -238,13 +239,27 @@ public class DefaultMailService implements MailService {
                 helper.setText(tbEmail.getBody(), tbEmail.isHtml());
 
                 if (multipart) {
-                    for (String imgId : tbEmail.getImages().keySet()) {
-                        String imgValue = tbEmail.getImages().get(imgId);
-                        String value = imgValue.replaceFirst("^data:image/[^;]*;base64,?", "");
-                        byte[] bytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(value);
-                        String contentType = helper.getFileTypeMap().getContentType(imgId);
-                        InputStreamSource iss = () -> new ByteArrayInputStream(bytes);
-                        helper.addInline(imgId, iss, contentType);
+                    if (tbEmail.getImages() != null) {
+                        for (String imgId : tbEmail.getImages().keySet()) {
+                            String imgValue = tbEmail.getImages().get(imgId);
+                            String value = imgValue.replaceFirst("^data:image/[^;]*;base64,?", "");
+                            byte[] bytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(value);
+                            String contentType = helper.getFileTypeMap().getContentType(imgId);
+                            InputStreamSource iss = () -> new ByteArrayInputStream(bytes);
+                            helper.addInline(imgId, iss, contentType);
+                        }
+                    }
+                    if (tbEmail.getAttachments() != null) {
+                        for (Map.Entry<String, byte[]> attachment : tbEmail.getAttachments().entrySet()) {
+                            byte[] bytes = attachment.getValue();
+                            if (bytes == null) {
+                                continue;
+                            }
+                            String fileName = attachment.getKey();
+                            String contentType = helper.getFileTypeMap().getContentType(fileName);
+                            InputStreamSource source = () -> new ByteArrayInputStream(bytes);
+                            helper.addAttachment(fileName, source, contentType);
+                        }
                     }
                 }
                 sendMailWithTimeout(javaMailSender, helper.getMimeMessage(), timeout);
